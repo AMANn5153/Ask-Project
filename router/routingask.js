@@ -406,7 +406,7 @@ router.put("/AddInfo",authenticate,async(req,res)=>{
     console.log(e)
   }
 })
-router.put("/updateAccount",authenticate,async(req,res)=>{
+router.put("/updateAbout",authenticate,async(req,res)=>{
   const {about}=req.body
   try{
     const updatedAccount=await Testbackend.findOneAndUpdate({_id:req.userId},{$set:{About:about}})
@@ -418,6 +418,25 @@ router.put("/updateAccount",authenticate,async(req,res)=>{
   catch(e){
     console.log(e)
     res.status(500).send("error occured")
+  }
+})
+router.put("/EditProfile",authenticate,async(req,res)=>{
+  const id=req.userId
+  const {data}=req.body
+  try{
+    const editProfile=await  Testbackend.findOneAndUpdate({_id:id},{username:data.username,email:data.email,
+    company:data.company,college:data.college,mobile:data.college,profession:data.profession
+    })
+
+    const saveData=await editProfile.save()
+
+    if(saveData){
+      res.status(200).send("saved")
+    }
+  }
+  catch(e){
+   res.status(500).json({error:"some error occured"})
+   console.log(e)
   }
 })
 
