@@ -108,7 +108,7 @@ router.post("/UserInfo",async (req,res)=>{     //userINFO API
   console.log(req.body)
     try{
       const result=await Testbackend.findOne({_id:id},"username")
-      console.log(result)
+      console.log("result",result)
       res.status(200).send(result)
     }
     catch(e){
@@ -285,7 +285,7 @@ router.put("/PostReply",authenticate,async(req,res)=>{
       const {_id}=req.userinfo[0]._id;
       
       const updateReply= await  Comment.findOneAndUpdate({"comment._id":commentId},
-      {$push:{"comment.$.reply":[{replyId:_id,message:message}]}},
+      {$push:{"comment.$.reply":[{replyId:_id,message:message.Reply}]}},
       {new:true})
       const saveReply=await updateReply.save()
       if(saveReply){
