@@ -16,6 +16,15 @@ const storage=multer.diskStorage({
   }
 })
 
+const storageCodeSnip=multer.diskStorage({
+  destination:function(req,file,cb){
+    cb(null,"./code_snip")
+  },
+  filename:function(req,file,cb){
+    cb(null,file.originalname)
+  }
+})
+
   const fileFilter=(req,file,cb)=>{
     if(file.mimetype=="image/jpeg" || file.mimetype=="image/png"){
       cb(null,true)
@@ -24,11 +33,25 @@ const storage=multer.diskStorage({
     }
   }
 
-const upload=multer({storage:storage,limits:{
-  fileSize:1024*1024 //limiting the file size
-},
-fileFilter:fileFilter //filtering the file with only jpeg and png photo
-})
+const upload=multer(
+  {
+  storage:storage,
+  limits:{
+    fileSize:1024*1024 //limiting the file size
+  },
+  fileFilter:fileFilter //filtering the file with only jpeg and png photo
+  } ,
+)
+
+const uploadCode=multer(
+  {
+    storage:storageCodeSnip,
+    limits:{
+      fileSize:1024*1024
+    },
+    fileFilter:fileFilter
+  }
+)
 
 
 
@@ -125,28 +148,28 @@ router.get("/Logout",(req,res)=>{             //Logout API
 })
 
 
-router.post("/Ask",authenticate,async (req,res)=>{ // Posts Question
+router.post("/Ask",authenticate,uploadCode.single("codeSnip"),async (req,res)=>{ // Posts Question
   
-  const user= req.userinfo
-  console.log(user[0]._id)
-  console.log(user)
+  const id= req.userId
+  const {title,problem,problemExpec}=req.body
 
-  const {title,ques}=req.body;
   try{
-      const findUser=await Testbackend.findOne({"_id":user[0]._id})
+      const findUser=await Testbackend.findOne({"_id":id})
       const indx=findUser.Post.length
 
       if(!findUser){
           res.status(404).json({error:"user not found"})
       }
       else{
-        const postInsertion=await Testbackend.findOneAndUpdate({_id:user[0]._id},{$push:{Post:[{"indx":indx,"title":title,"ques":ques,"Likes":[]}]}})
+        const postInsertion=await Testbackend.findOneAndUpdate({_id:id},{$push:{Post:[{"title":title,"problem":problem,
+        "problemExpec":problemExpec,"codeSnip":req.file.path,"Likes":[]}]}})
         const result=await postInsertion.save()
+        console.log(result)
 
-        const postFind=await Testbackend.find({_id:user[0]._id}).select("Post")
+        const postFind=await Testbackend.find({_id:id}).select("Post")
         console.log(postFind[0].Post)
 
-        const insertComment= new Comment({userId:user[0]._id,Postid:postFind[0].Post[indx]._id})
+        const insertComment= new Comment({userId:id,Postid:postFind[0].Post[indx]._id})
         const insertresult=await insertComment.save();
       
         if(result&&insertresult){
@@ -157,9 +180,9 @@ router.post("/Ask",authenticate,async (req,res)=>{ // Posts Question
   catch(e){
     console.log(e)
     res.status(500).send("error occured")
-
   }
 })
+
 
 
 router.get("/Question",async (req,res)=>{

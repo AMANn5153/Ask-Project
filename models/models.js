@@ -41,11 +41,16 @@ const backendtest=new mongoose.Schema({
     },
     Post:[
         {   
-            title:{type:String},
-            ques:{type:String},
-            Likes:[{type:mongoose.Schema.Types.ObjectId}],
-            Date:[]
-        }
+            title:{type:String
+            },
+            problem:{type:String
+            },
+            problemExpec:{type:String
+            },
+            codeSnip:{type:String},
+            Date:{type:String},
+            Likes:[{type:mongoose.Schema.Types.ObjectId}]
+         }
     ],
     tokens:[
         {
