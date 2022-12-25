@@ -58,8 +58,8 @@ const uploadCode=multer(
 
 
 router.post("/register",async (req,res)=>{      //registeration  API
-    const  {username,email,Password}=req.body;
-    if(!username||!email||!Password){
+    const  {username,email,password}=req.body;
+    if(!username||!email||!password){
       return  res.status(403).json({error:"empty field"})
     }
     try{
@@ -68,7 +68,7 @@ router.post("/register",async (req,res)=>{      //registeration  API
            return res.status(409).json({error:"user alerady exist"})
         }
         else{
-        const backend=new Testbackend({username,email,Password})
+        const backend=new Testbackend({username,email,password})
         const result=await backend.save();
         if(result){
           return  res.status(201).json({message:" user is created"})
@@ -269,14 +269,14 @@ router.post("/getCodeSnip",async(req,res)=>{
 })
 
 router.post("/checkUser",authenticate,async(req,res)=>{
-  const {userId,Postid}=req.body
+  const {data}=req.body
   let user=req.userId
   try{
-    if(userId==user){
+    if(data.state.userId==user){
       res.status(499).json({val:true})
     }
     else{
-    const checkLikes=await Testbackend.count({"Post._id":Postid,"Post.Likes":{$in:[user]}})
+    const checkLikes=await Testbackend.count({"Post._id":data.state.id,"Post.Likes":{$in:[user]}})
     console.log("checkLikes",checkLikes)
       if(checkLikes){
         res.status(499).json({val:true})
@@ -313,9 +313,9 @@ router.post("/PostLike",authenticate,async(req,res)=>{
 })
 
 router.post("/getLikes",async(req,res)=>{//getting a;; the Like arrya in the document
-  const {id,Postid}=req.body
+  const {data}=req.body
   try{
-    const LikeArray=await Testbackend.find({"_id":id,"Post._id":Postid}).select("Post.Likes.$")
+    const LikeArray=await Testbackend.find({"_id":data.state.userId,"Post._id":data.state.id}).select("Post.Likes.$")
     console.log("hi",LikeArray)
     res.status(200).send(LikeArray)   
     }  
@@ -329,19 +329,17 @@ catch(e){
 
 router.put("/Comment",authenticate,async (req,res)=>{
   const {_id}=req.userinfo[0]._id;//fetching the loggedin user from the autheticate middleware
-  const {userId,Postid,comment}=req.body;//getting data from the frontend
-  console.log(userId)
+  const {userId,postId,comment}=req.body;//getting data from the frontend
+  console.log(comment)
+
   try{
-    console.log("hi")
     const findUser=await Testbackend.findOne({_id})//if user exist
-    console.log(findUser)
     if(!findUser){
       res.status(400).json({error:"please Login first to reply"})//sending error message if user not found
     }else{
-      console.log("hi")
 
 
-      const postingComment=await Comment.findOneAndUpdate({userId,Postid},{$push:{comment:[{commenterid:_id,comment:comment}]}},{new:true})//finding and updating comment document with corresponing user and quesindex      
+      const postingComment=await Comment.findOneAndUpdate({userId,Postid:postId},{$push:{comment:[{commenterid:_id,comment:comment.comment}]}},{new:true})//finding and updating comment document with corresponing user and quesindex      
       console.log("posting",postingComment)
       const postResult=await postingComment.save();///save the result to the document
 
@@ -382,6 +380,7 @@ router.put("/PostReply",authenticate,async(req,res)=>{
       {new:true})
       const saveReply=await updateReply.save()
       if(saveReply){
+        console.log(saveReply)
         res.status(202).json({message:"Your Reply Posted"})
       }
     }
@@ -392,10 +391,10 @@ router.put("/PostReply",authenticate,async(req,res)=>{
 })
 
 router.post("/ShowReply",async(req,res)=>{
-  const {commentId}=req.body
+  const {id}=req.body
   try{
-    const showReply=await Comment.findOne({"comment._id":commentId}).select("comment.reply.$")
-
+    const showReply=await Comment.findOne({"comment._id":id}).select("comment.reply.$")
+    console.log("huh",showReply.comment[0].reply)
     res.status(202).send(showReply)
   }
   catch(e){

@@ -35,7 +35,7 @@ const backendtest=new mongoose.Schema({
     college:{
         type:String
     },
-    Password:{
+    password:{
         type:String,
         required:true
     },
