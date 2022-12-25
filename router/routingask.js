@@ -1,4 +1,5 @@
 const express=require("express")
+const mongoose=require("mongoose")
 const router =express.Router()
 const bcrypt=require("bcryptjs")
 const jwt=require("jsonwebtoken")
@@ -6,6 +7,7 @@ const {Testbackend,Comment}=require("../models/models")
 const authenticate=require("../middleware/authenticate")
 const multer = require("multer")
 const path=require("path")
+const { resolve } = require("path")
 
 const storage=multer.diskStorage({
   destination:function(req,file,cb){
@@ -110,6 +112,22 @@ router.post("/Login",async (req,res)=>{       //Login  API
   res.status(500).json({error:"wont be able to login"})
 }}
 )
+router.get("/CheckLogin",authenticate,async(req,res)=>{
+  const token=req.token
+  console.log(token)
+  try{
+    if(token){
+      res.status(200).json({message:true})
+    }
+    else{
+      res.json({message:false})
+    }
+  }
+  catch(e){
+    res.status(500).json({error:"some errror occured"})
+    console.log(e)
+  }
+})
 
 router.post("/passChange",async(req,res)=>{
   try{
@@ -152,6 +170,10 @@ router.post("/Ask",authenticate,uploadCode.single("codeSnip"),async (req,res)=>{
   
   const id= req.userId
   const {title,problem,problemExpec}=req.body
+  let code_snip_path
+  if(req.file!=undefined){
+   code_snip_path=path.join(__dirname,"../",req.file.path)
+  }
 
   try{
       const findUser=await Testbackend.findOne({"_id":id})
@@ -162,16 +184,17 @@ router.post("/Ask",authenticate,uploadCode.single("codeSnip"),async (req,res)=>{
       }
       else{
         const postInsertion=await Testbackend.findOneAndUpdate({_id:id},{$push:{Post:[{"title":title,"problem":problem,
-        "problemExpec":problemExpec,"codeSnip":req.file.path,"Likes":[]}]}})
+        "problemExpec":problemExpec,"codeSnip":code_snip_path,"Likes":[]}]}})
         const result=await postInsertion.save()
-        console.log(result)
+        if(!result){
+          res.send(304).json({error:"some error occured while Posting the Question"})
+        }
 
         const postFind=await Testbackend.find({_id:id}).select("Post")
-        console.log(postFind[0].Post)
 
-        const insertComment= new Comment({userId:id,Postid:postFind[0].Post[indx]._id})
+        const insertComment= new Comment({userId:id,Postid:postFind[0].Post[indx]._id})//creating a document in Comment to store Question Comments
         const insertresult=await insertComment.save();
-      
+        
         if(result&&insertresult){
           res.status(200).json({message:"Question posted"})
         }
@@ -187,21 +210,69 @@ router.post("/Ask",authenticate,uploadCode.single("codeSnip"),async (req,res)=>{
 
 router.get("/Question",async (req,res)=>{
   try{
-  const result=await  Testbackend.find({},"Post username")
-  console.log(result)
-  res.status(200).send(result);
+  const questionResult=await Testbackend.aggregate([{
+    $project:{"Post":1,"username":1}},{$unwind:"$Post"},{$group:{_id:"$Post._id",title:{$first:"$Post.title"},
+    problem:{$first:"$Post.problem"},userId:{$first:"$_id"},username:{$last:"$username"}}}
+  ])
+  console.log(questionResult)
+  res.status(202).send(questionResult)
   }
   catch(e){
-     res.status(500).send(e)
+    console.log(e)
+    res.status(500).send(e)
   }
 })
-router.post("/checkUser",authenticate,async(req,res)=>{
-  console.log("hello",req.userId)
 
-  const {id,Postid}=req.body
+
+router.post("/QuestionInfo",async(req,res)=>{
+  const {id}=req.body
+  const postId=mongoose.Types.ObjectId(id)
+  
+  try{
+  const detail=await Testbackend.aggregate([{$project:{"Post":1,_id:0,username:1}},{$unwind:"$Post"},//left join 
+  {$match:{"Post._id":postId}},{$lookup:{
+    from:"comments",
+    localField:"Post._id",
+    foreignField:"Postid",
+    as:"Comment"
+    }}
+  ])
+  
+    if(detail){
+      console.log(detail)
+      res.status(200).send(detail)
+    }
+  }
+  catch(e){
+    res.status(500).send("some error occured")
+    console.log(e)
+  }
+})
+
+router.post("/getCodeSnip",async(req,res)=>{
+  const {id}=req.body
+  const postId=mongoose.Types.ObjectId(id)
+  try{
+    const getCodeSnip=await Testbackend.aggregate([
+      {$project:{"Post":1}},
+      {$unwind:"$Post"},
+      {$match:{"Post._id":postId}},
+      {$group:{_id:"$Post.codeSnip"}}
+    ])
+    console.log(getCodeSnip)
+    res.sendFile(path.resolve(getCodeSnip[0]._id))
+  }
+  catch(e){
+    res.status(500).send("some error occured")
+    console.log(e)
+  }
+})
+
+router.post("/checkUser",authenticate,async(req,res)=>{
+  const {userId,Postid}=req.body
   let user=req.userId
   try{
-    if(id==user){
+    if(userId==user){
       res.status(499).json({val:true})
     }
     else{
@@ -224,7 +295,6 @@ router.post("/PostLike",authenticate,async(req,res)=>{
   let user=req.userId
   try{
       const findQues=await Testbackend.find({"_id":id,"Post._id":Postid})
-      console.log(findQues)
       if(!findQues){
         res.status(404).json({error:"Question Was Not Found"})
       }
@@ -383,12 +453,14 @@ router.get("/stats",authenticate,async(req,res)=>{ //route will get stats
 
 router.put("/upload",authenticate,upload.single("pic"),async(req,res)=>{
  console.log(req.file,req.body)
+ console.log(req.file.path)
+ const path_profilePic=path.join(__dirname,"../",req.file.path)
  try{
-    const uploadProfile=await Testbackend.findOneAndUpdate({_id:req.userinfo[0]._id},{$set:{profilePic:req.file.path}})
+    const uploadProfile=await Testbackend.findOneAndUpdate({_id:req.userinfo[0]._id},{$set:{profilePic:path_profilePic}},{new:true})
     const saveProfilePic=await uploadProfile.save();
     if(saveProfilePic){
       console.log(saveProfilePic)
-      res.status(202).sendFile(saveProfilePic.profilePic,{root:path.join("C:/Users/nero/Desktop/backend")})
+      res.status(202).sendFile(path.resolve(saveProfilePic.profilePic))
     }
  }
  catch(e){
@@ -403,7 +475,7 @@ router.get("/getPic",authenticate,async(req,res)=>{// ge
     const proPic=await Testbackend.findOne({_id:req.userId}).select("profilePic")
     console.log("proPic",proPic.profilePic)
     if(proPic){
-      res.status(202).sendFile(proPic.profilePic,{root:path.join("C:/Users/nero/Desktop/backend")})
+      res.status(202).sendFile(path.resolve(proPic.profilePic))
     }
 
   }
