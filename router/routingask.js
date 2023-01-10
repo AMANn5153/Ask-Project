@@ -2,11 +2,11 @@ const express=require("express")
 const mongoose=require("mongoose")
 const router =express.Router()
 const bcrypt=require("bcryptjs")
-const jwt=require("jsonwebtoken")
 const {Testbackend,Comment}=require("../models/models")
 const authenticate=require("../middleware/authenticate")
 const multer = require("multer")
 const path=require("path")
+const {passChange}=require("../mailer/emailPassChange")
 const { resolve } = require("path")
 
 const storage=multer.diskStorage({
@@ -90,8 +90,9 @@ router.post("/Login",async (req,res)=>{       //Login  API
 
   try{
     const exist=await Testbackend.findOne({email})
+    console.log(exist)
     if(exist){
-      const passCheck=await bcrypt.compare(Password,exist.Password)
+      const passCheck=await bcrypt.compare(Password,exist.password)
       if(passCheck){
         const token= await exist.generateAuthToken();
         res.cookie("authcookie",token,{
@@ -106,8 +107,7 @@ router.post("/Login",async (req,res)=>{       //Login  API
     }
     else{
       return res.status(401).json({error:"invalid credentials"})
-    }
-}catch(e){
+}}catch(e){
   console.log(e)
   res.status(500).json({error:"wont be able to login"})
 }}
@@ -130,12 +130,16 @@ router.get("/CheckLogin",authenticate,async(req,res)=>{
 })
 
 router.post("/passChange",async(req,res)=>{
+  req.to=req.body.email;
   try{
-    const {name,email,password}=req.body
-    const check= await Testbackend.findOne({username:name,email:email})
-    if(check){
-      const changePass=await Testbackend({_id:check._id},{password:password})
-    }
+    const userExist=await Testbackend.findOne({email:req.body.email})
+      if(userExist){
+        req.name=userExist.username
+        passChange(req)
+     }
+       else{
+        res.status(401).send("User Not Found!")
+      }
   }
   catch(e){
     res.status(500).send("error occured")

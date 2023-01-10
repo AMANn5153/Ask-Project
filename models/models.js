@@ -82,8 +82,8 @@ const comments=new mongoose.Schema({
 
 
 backendtest.pre("save",async function(next){
-    if(this.isModified("Password")){
-        this.Password=await bycrypt.hash(this.Password,12)
+    if(this.isModified("password")){
+        this.password=await bycrypt.hash(this.password,12)
     }
     next();
 })
@@ -91,7 +91,7 @@ backendtest.pre("save",async function(next){
 backendtest.methods.generateAuthToken=async function(){
     try{
     const tokenGen= jwt.sign({_id:this._id},process.env.SECRET)//genertaes token
-    this.tokens=this.tokens.concat({token:tokenGen})
+    this.tokens=this.tokens.splice(0,1,{token:tokenGen})
      await this.save();
      return tokenGen;
     }
