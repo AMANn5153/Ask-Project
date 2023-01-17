@@ -4,8 +4,8 @@ const dotenv=require("dotenv")
 const cookieParser=require("cookie-parser")
 
 
+
 app.use(express.static("/profile_pic"))
-app.use("/passChange",express.static(__dirname+"/mailer/template/public"))
 
 dotenv.config({path:"./config.env"})
 app.use(express.json())// it is middleware which parses income request with json payload

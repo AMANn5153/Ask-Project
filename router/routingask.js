@@ -3,11 +3,15 @@ const mongoose=require("mongoose")
 const router =express.Router()
 const bcrypt=require("bcryptjs")
 const {Testbackend,Comment}=require("../models/models")
+const {Token}=require("../models/token.model")
 const authenticate=require("../middleware/authenticate")
 const multer = require("multer")
 const path=require("path")
 const {passChange}=require("../mailer/emailPassChange")
 const { resolve } = require("path")
+const crypto=require("crypto")
+
+
 
 const storage=multer.diskStorage({
   destination:function(req,file,cb){
@@ -130,13 +134,32 @@ router.get("/CheckLogin",authenticate,async(req,res)=>{
 })
 
 router.post("/passChange",async(req,res)=>{
-  req.to=req.body.email;
+  req.to=req.body.data;
   try{
-    const userExist=await Testbackend.findOne({email:req.body.email})
+    const userExist=await Testbackend.findOne({email:req.body.data})
       if(userExist){
-        req.name=userExist.username
+        req.name=userExist.username// putting username in req object 
+        // creating a token for password reset 
+        const token=crypto.randomBytes(32).toString("hex")
+        req.passToken=token
+        // hashing the token
+        const hashToken=await bcrypt.hash(token,10)
+        //finding if token exist in the database
+        const tokenExist=await Token.findOne({userId:userExist._id})
+        //if exist then delete that token because new request for the reset password has been send
+        if(tokenExist){
+          await tokenExist.deleteOne()
+        }
+          //saving the newly created token
+          const setToken=await new Token({
+            userId:userExist._id,
+            token:hashToken,
+            expiresAt:Date.now()
+          }).save()
+        const link=`http://localhost:3000/Login/PasswordChange?token=${token}`
+        
         passChange(req)
-     }
+        res.status(200).json({"value":true,"message":"check your Email"})}
        else{
         res.status(401).send("User Not Found!")
       }
