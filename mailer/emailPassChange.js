@@ -44,7 +44,7 @@ const passChange=async(req)=>{
         from:"amann5153@gmail.com",
         to:req.to,
         subject:`Hi! ${req.name}`,
-        html:'<p>`hello ${req.name}`1</p><p>reset your password <a href=`http://localhost:3000/Login/PasswordChange?token=${req.passToken}`> click here</a> </p>'
+        html:'<p>`hello ${req.name}`</p><p>reset your password <a href=`http://localhost:3000/Login/EnterPassChange?token=${req.passToken}&email=${req.to}`> click here</a> </p>'
     }
    const result= await transporter.sendMail(mailOption); 
     } 
