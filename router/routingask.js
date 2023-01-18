@@ -154,9 +154,8 @@ router.post("/emailVerify",async(req,res)=>{
           const setToken=await new Token({
             userId:userExist._id,
             token:hashToken,
-            expiresAt:Date.now()
           }).save()
-        
+       
         passChange(req)
         res.status(200).json({"value":true,"message":"check your Email"})}
        else{
