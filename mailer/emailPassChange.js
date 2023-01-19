@@ -1,5 +1,5 @@
 const nodemailer=require("nodemailer")
-const ejs =require("ejs")
+const hbs =require("nodemailer-express-handlebars")
 const {google}=require("googleapis")
 const path=require("path")
 
@@ -8,7 +8,7 @@ const OAuth2=google.auth.OAuth2
 
 const passChange=async(req)=>{
     try{
-    // const data=await ejs.renderFile(path.join(__dirname,"../","views/index.ejs"))
+        const link=`http://localhost:3000/Login/EnterPassChange?token=${req.passToken}&email=${req.to}`
     const oauth2Client=new OAuth2(
         process.env.OAUTH_CLIENTID,
         process.env.OAUTH_CLIENT_SECRET,
@@ -40,11 +40,25 @@ const passChange=async(req)=>{
         }
     })
     
+    const handlebarOptions={
+        viewEngine:{
+            partialsDir:path.join(__dirname,"../","/views/"),
+            defaultLayout:false
+        },
+        viewPath:path.join(__dirname,"../","/views/")
+    }
+
+    transporter.use('compile',hbs(handlebarOptions))
+
+
     const mailOption={
         from:"amann5153@gmail.com",
         to:req.to,
         subject:`Hi! ${req.name}`,
-        html:'<p>`hello ${req.name}`</p><p>reset your password <a href=`http://localhost:3000/Login/EnterPassChange?token=${req.passToken}&email=${req.to}`> click here</a> </p>'
+        template:'index',
+        context:{name:req.name,
+            link:link
+        }
     }
    const result= await transporter.sendMail(mailOption); 
     } 
