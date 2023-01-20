@@ -157,7 +157,7 @@ router.post("/emailVerify",async(req,res)=>{
           }).save()
        
         passChange(req)
-        res.status(200).json({"value":true,"message":"check your Email"})}
+        res.status(200).json({"message":"check your Email"})}
        else{
         res.status(401).send("User Not Found!")
       }
@@ -174,28 +174,33 @@ router.put("/changePass",async(req,res)=>{
   try{
   //destructuring the data in req.body
   const {password,token,email}=req.body
+  console.log(req.body)
   //checking email in the database if there is move on or send a response with 404 error user not found
-  const checkEmail=await Testbackend.findOne({email})
+  const checkEmail=await Testbackend.findOne({email:email})
+  console.log(checkEmail)
   if(checkEmail){
     //finding the token if it dosen't exist it means TTL has deleted the token ,
     // sending the res with token has been expired
     const findToken=await Token.findOne({userId:checkEmail._id})
     if(!findToken){
-      res.status(404).send("token was expired try again")
+      res.status(404).json({"message":"token was expired try again"})
     }else{
       //if token exist in the collection then just compare the token that came from the frontend and database
     const checkToken=await bcrypt.compare(token,findToken.token)
+    console.log(checkToken)
     if(checkToken){
       //if token has been found then update the database with new password and send response as password change
       const changePassword=await Testbackend.findOneAndUpdate({id:checkEmail._id},{$set:{password:password}})
-      const savePassword=changePassword.save();
+      const savePassword=await changePassword.save();
+      console.log(savePassword)
       if(savePassword){
-        res.status(200).send("password Changed")
+        await findToken.deleteOne()
+        res.status(200).json({"message":"password Changed"})
       }
     }
     else{
       // if token dosen't match then send response you're not authorized
-      res.status(403).send("you're not authorized")
+      res.status(403).json({"message":"you're not authorized"})
     }
   }
   }

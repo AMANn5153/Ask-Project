@@ -6,7 +6,7 @@ const token=new mongoose.Schema({
     expireAt:{
         type:Date,
         default:Date.now,
-        expires:3600
+        expires:'60m'
     }
 },{timestamps:true})
 
