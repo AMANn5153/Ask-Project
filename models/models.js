@@ -42,14 +42,21 @@ const backendtest=new mongoose.Schema({
     
     Post:[
         {   
-            title:{type:String
+            title:{
+                type:String,
+                required:true
             },
-            problem:{type:String
+            problem:{type:String,
+                required:true
             },
-            problemExpec:{type:String
+            problemExpec:{type:String,
+                required:true
             },
             codeSnip:{type:String},
-            Date:{type:String},
+            Date:{
+                type:Date,
+                default:Date.now
+            },
             Likes:[{type:mongoose.Schema.Types.ObjectId}]
          }
     ],
@@ -60,7 +67,7 @@ const backendtest=new mongoose.Schema({
             }
         }
     ]
-})
+},{timestamps:true})
 
 const comments=new mongoose.Schema({
 

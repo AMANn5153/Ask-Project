@@ -87,14 +87,12 @@ router.post("/register",async (req,res)=>{      //registeration  API
 router.post("/Login",async (req,res)=>{       //Login  API
     
   const {email,Password}=req.body;
-  console.log(email,Password)
   if(!email || !Password){
    return res.status(403).json({error:"empty Fields"})
   }
 
   try{
     const exist=await Testbackend.findOne({email})
-    console.log(exist)
     if(exist){
       const passCheck=await bcrypt.compare(Password,exist.password)
       if(passCheck){
@@ -118,7 +116,6 @@ router.post("/Login",async (req,res)=>{       //Login  API
 )
 router.get("/CheckLogin",authenticate,async(req,res)=>{
   const token=req.token
-  console.log(token)
   try{
     if(token){
       res.status(200).json({message:true})
@@ -174,10 +171,8 @@ router.put("/changePass",async(req,res)=>{
   try{
   //destructuring the data in req.body
   const {password,token,email}=req.body
-  console.log(req.body)
   //checking email in the database if there is move on or send a response with 404 error user not found
   const checkEmail=await Testbackend.findOne({email:email})
-  console.log(checkEmail)
   if(checkEmail){
     //finding the token if it dosen't exist it means TTL has deleted the token ,
     // sending the res with token has been expired
@@ -187,12 +182,10 @@ router.put("/changePass",async(req,res)=>{
     }else{
       //if token exist in the collection then just compare the token that came from the frontend and database
     const checkToken=await bcrypt.compare(token,findToken.token)
-    console.log(checkToken)
     if(checkToken){
       //if token has been found then update the database with new password and send response as password change
       const changePassword=await Testbackend.findOneAndUpdate({id:checkEmail._id},{$set:{password:password}})
       const savePassword=await changePassword.save();
-      console.log(savePassword)
       if(savePassword){
         await findToken.deleteOne()
         res.status(200).json({"message":"password Changed"})
@@ -216,11 +209,10 @@ catch(e){
 
 router.post("/UserInfo",async (req,res)=>{     //userINFO API
   const {id}=req.body
-  console.log(id)
-  console.log(req.body)
+  
     try{
       const result=await Testbackend.findOne({_id:id},"username")
-      console.log("result",result)
+      
       res.status(200).send(result)
     }
     catch(e){
@@ -283,9 +275,9 @@ router.get("/Question",async (req,res)=>{
   try{
   const questionResult=await Testbackend.aggregate([{
     $project:{"Post":1,"username":1}},{$unwind:"$Post"},{$group:{_id:"$Post._id",title:{$first:"$Post.title"},
-    problem:{$first:"$Post.problem"},userId:{$first:"$_id"},username:{$last:"$username"}}}
+    problem:{$first:"$Post.problem"},userId:{$first:"$_id"},date:{$first:"$Post.Date"},username:{$last:"$username"}}}
   ])
-  console.log(questionResult)
+
   res.status(202).send(questionResult)
   }
   catch(e){
@@ -295,11 +287,13 @@ router.get("/Question",async (req,res)=>{
 })
 
 
-router.post("/QuestionInfo",async(req,res)=>{
+router.post("/QuestionInfo",async(req,res)=>{//fetchDetails for the  question eith left join comments collection
   const {id}=req.body
   const postId=mongoose.Types.ObjectId(id)
-  
+ 
   try{
+    //first project all the post  with username and then in second operator we're unwinding the post array
+    //now we're matching "postId" and the then doing the left join of comment collection
   const detail=await Testbackend.aggregate([{$project:{"Post":1,_id:0,username:1}},{$unwind:"$Post"},//left join 
   {$match:{"Post._id":postId}},{$lookup:{
     from:"comments",
@@ -310,8 +304,8 @@ router.post("/QuestionInfo",async(req,res)=>{
   ])
   
     if(detail){
-      console.log(detail)
-      res.status(200).send(detail)
+      
+      res.status(200).json(detail)
     }
   }
   catch(e){
@@ -330,8 +324,8 @@ router.post("/getCodeSnip",async(req,res)=>{
       {$match:{"Post._id":postId}},
       {$group:{_id:"$Post.codeSnip"}}
     ])
-    console.log(getCodeSnip)
-    res.sendFile(path.resolve(getCodeSnip[0]._id))
+  
+    res.status(200).sendFile(path.resolve(getCodeSnip[0]?._id))
   }
   catch(e){
     res.status(500).send("some error occured")
@@ -348,7 +342,6 @@ router.post("/checkUser",authenticate,async(req,res)=>{
     }
     else{
     const checkLikes=await Testbackend.count({"Post._id":data.state.id,"Post.Likes":{$in:[user]}})
-    console.log("checkLikes",checkLikes)
       if(checkLikes){
         res.status(499).json({val:true})
       }
@@ -360,18 +353,19 @@ router.post("/checkUser",authenticate,async(req,res)=>{
   }} )
 
 router.post("/PostLike",authenticate,async(req,res)=>{
-  console.log("hello",req.userId)
 
   const {id,Postid}=req.body
   let user=req.userId
   try{
+    //checking wether user and question exists in the database
       const findQues=await Testbackend.find({"_id":id,"Post._id":Postid})
       if(!findQues){
         res.status(404).json({error:"Question Was Not Found"})
       }
       else{
       const postLike=await Testbackend.findOneAndUpdate({"_id":id,"Post._id":Postid},
-      {$push:{"Post.$.Likes":user}},
+      {$push:{"Post.$.Likes":user}},//whoever is looged in  we're fetching the user id of that
+      // user and push it into the array of likes field
       {new:true})
        await postLike.save();
       res.status(200).send("liked Post")   
@@ -383,11 +377,15 @@ router.post("/PostLike",authenticate,async(req,res)=>{
   }
 })
 
-router.post("/getLikes",async(req,res)=>{//getting a;; the Like arrya in the document
+router.post("/getLikes",async(req,res)=>{//getting all the Like  in the document
   const {data}=req.body
+  
   try{
-    const LikeArray=await Testbackend.find({"_id":data.state.userId,"Post._id":data.state.id}).select("Post.Likes.$")
-    console.log("hi",LikeArray)
+    //data.state.userId: it is user id 
+    //data.state.id:it is post did that user has made 
+    //selecting only Likes field in the document " $ is postional opertaor "
+    const LikeArray=await Testbackend.find({"_id":data.userId,"Post._id":data.id})
+    .select("Post.Likes.$")
     res.status(200).send(LikeArray)   
     }  
 catch(e){
@@ -401,8 +399,6 @@ catch(e){
 router.put("/Comment",authenticate,async (req,res)=>{
   const {_id}=req.userinfo[0]._id;//fetching the loggedin user from the autheticate middleware
   const {userId,postId,comment}=req.body;//getting data from the frontend
-  console.log(comment)
-
   try{
     const findUser=await Testbackend.findOne({_id})//if user exist
     if(!findUser){
@@ -410,8 +406,9 @@ router.put("/Comment",authenticate,async (req,res)=>{
     }else{
 
 
-      const postingComment=await Comment.findOneAndUpdate({userId,Postid:postId},{$push:{comment:[{commenterid:_id,comment:comment.comment}]}},{new:true})//finding and updating comment document with corresponing user and quesindex      
-      console.log("posting",postingComment)
+      const postingComment=await Comment.findOneAndUpdate({userId,Postid:postId},
+      {$push:{comment:[{commenterid:_id,comment:comment}]}},{new:true})
+      //finding and updating comment document with corresponing user and quesindex      
       const postResult=await postingComment.save();///save the result to the document
 
       if(postResult){
@@ -451,7 +448,6 @@ router.put("/PostReply",authenticate,async(req,res)=>{
       {new:true})
       const saveReply=await updateReply.save()
       if(saveReply){
-        console.log(saveReply)
         res.status(202).json({message:"Your Reply Posted"})
       }
     }
@@ -465,7 +461,6 @@ router.post("/ShowReply",async(req,res)=>{
   const {id}=req.body
   try{
     const showReply=await Comment.findOne({"comment._id":id}).select("comment.reply.$")
-    console.log("huh",showReply.comment[0].reply)
     res.status(202).send(showReply)
   }
   catch(e){
@@ -522,8 +517,7 @@ router.get("/stats",authenticate,async(req,res)=>{ //route will get stats
 })
 
 router.put("/upload",authenticate,upload.single("pic"),async(req,res)=>{
- console.log(req.file,req.body)
- console.log(req.file.path)
+
  const path_profilePic=path.join(__dirname,"../",req.file.path)
  try{
     const uploadProfile=await Testbackend.findOneAndUpdate({_id:req.userinfo[0]._id},{$set:{profilePic:path_profilePic}},{new:true})
@@ -541,9 +535,7 @@ router.put("/upload",authenticate,upload.single("pic"),async(req,res)=>{
 
 router.get("/getPic",authenticate,async(req,res)=>{// ge
   try{
-    console.log("hi")
     const proPic=await Testbackend.findOne({_id:req.userId}).select("profilePic")
-    console.log("proPic",proPic.profilePic)
     if(proPic){
       res.status(202).sendFile(path.resolve(proPic.profilePic))
     }
@@ -608,11 +600,9 @@ router.put("/EditProfile",authenticate,async(req,res)=>{
 router.put("/delQuestion",authenticate,async(req,res)=>{// deletes the question by taking the spcfic _id
   const id=req.userId
   const {idQues}=req.body
-  console.log(id)
   try{
     const delQues=await Testbackend.findOneAndUpdate({_id:id},{$pull:{Post:{_id:idQues}}},{new:true})//here 
     //findOneAndUpdate pull the subdocument from the specified document _id the pull operator is used for the operation
-    console.log(delQues)
   }
   catch(e){
     console.log(e)
