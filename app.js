@@ -7,7 +7,7 @@ const PORT=process.env.PORT||8081
 
 
 app.use(cors({
-    origin: '*',
+    origin: 'https://unrivaled-malasada-ac96ba.netlify.app/',
     credentials: true,
     methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
     allowedHeaders: ['Content-Type','*'],
