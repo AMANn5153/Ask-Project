@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const dotenv=require("dotenv")
 const cookieParser=require("cookie-parser")
+const PORT=process.env.PORT||8081
 
 
 
@@ -17,4 +18,4 @@ app.use(require("./router/routingask"))// middleware where all the routes are de
 
 
 app.get('/', (req, res) => res.send('Hello World!'))
-app.listen(8081, () => console.log("connected to port number 8081"))//creting a port number 8081
+app.listen(PORT, () => console.log("connected to port number 8081"))//creting a port number 8081
