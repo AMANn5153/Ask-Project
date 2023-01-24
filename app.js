@@ -7,7 +7,7 @@ const PORT=process.env.PORT||8081
 
 
 app.use(cors({
-    origin: 'https://heroic-travesseiro-31e3c4.netlify.app/',
+    origin: '*',
     credentials: true,
     methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
     allowedHeaders: ['Content-Type'],
