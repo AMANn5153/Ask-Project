@@ -10,7 +10,7 @@ app.use(cors({
     origin: '*',
     credentials: true,
     methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type','*'],
     exposedHeaders: ['Content-Type']
 }))
 app.use(express.static("/profile_pic"))
