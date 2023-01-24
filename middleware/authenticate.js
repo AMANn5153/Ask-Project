@@ -15,7 +15,7 @@ const authenticate= async (req,res,next)=>{
         next();
     }
     catch(e){
-        res.status(401).json({error:"Please loggin first"})
+        res.status(401).json({message:"Please loggin first"})
         console.log(e)
     }
 
