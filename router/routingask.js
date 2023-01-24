@@ -160,8 +160,9 @@ router.post("/emailVerify",async(req,res)=>{
       }
   }
   catch(e){
-    res.status(500).send("error occured")
     console.log(e)
+    res.status(500).send("error occured")
+   
   }
 })
 
@@ -183,8 +184,9 @@ router.put("/changePass",async(req,res)=>{
       //if token exist in the collection then just compare the token that came from the frontend and database
     const checkToken=await bcrypt.compare(token,findToken.token)
     if(checkToken){
+      const hashPassword=await bcrypt.hash(password,12)
       //if token has been found then update the database with new password and send response as password change
-      const changePassword=await Testbackend.findOneAndUpdate({id:checkEmail._id},{$set:{password:password}})
+      const changePassword=await Testbackend.findOneAndUpdate({id:checkEmail._id},{$set:{password:hashPassword}})
       const savePassword=await changePassword.save();
       if(savePassword){
         await findToken.deleteOne()
@@ -202,8 +204,8 @@ router.put("/changePass",async(req,res)=>{
   }
 }
 catch(e){
-  res.status(500).send("some error has occured")
   console.log(e)
+  res.status(500).send("some error has occured")
 }
 })
 

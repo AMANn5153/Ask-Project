@@ -2,13 +2,13 @@ const nodemailer=require("nodemailer")
 const hbs =require("nodemailer-express-handlebars")
 const {google}=require("googleapis")
 const path=require("path")
-
+const ClientUrl=process.env.URL
 
 const OAuth2=google.auth.OAuth2
 
 const passChange=async(req)=>{
     try{
-    const link=`http://localhost:3000/Login/EnterPassChange?token=${req.passToken}&email=${req.to}`//link to passwo`rd change 
+    const link=`${ClientUrl}/Login/EnterPassChange?token=${req.passToken}&email=${req.to}`//link to passwo`rd change 
     //page provides an acess token to the page and email from which password change request has come
     const oauth2Client=new OAuth2(//Creating an object of Oauth2 from googleapi third party module which allows 
     //us to use googleApi. we're using this to get access token so that we dont need to refresh access token 
@@ -29,7 +29,7 @@ const passChange=async(req)=>{
     const accessToken= await new Promise((resolve,reject)=>{//creating a promise fot getting an access token
         oauth2Client.getAccessToken((err,token)=>{
             if(err){
-                reject("some error has occured");
+                reject(err);
             }
             resolve(token)
         })
