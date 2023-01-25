@@ -102,8 +102,6 @@ router.post("/Login",async (req,res)=>{       //Login  API
           httpOnly:true,
           sameSite:"none",
           secure:true,
-          domain:"https://ask-project-aman.netlify.app"
-          
         })
         res.status(200).json({message:"logged in"})
       }

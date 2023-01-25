@@ -10,7 +10,7 @@ app.use(cors({
     origin:"https://ask-project-aman.netlify.app",
     credentials: true,
     methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
-    allowedHeaders: ['Content-Type','Origin',],
+    allowedHeaders: ['Content-Type',],
     exposedHeaders: ['Content-Type']
 }))
 app.use(express.static("/profile_pic"))
