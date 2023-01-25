@@ -101,6 +101,7 @@ router.post("/Login",async (req,res)=>{       //Login  API
           expires:new Date(Date.now()+3600000),
           httpOnly:true,
           sameSite:"none",
+          secure:true,
           domain:"https://ask-project-aman.netlify.app"
           
         })
