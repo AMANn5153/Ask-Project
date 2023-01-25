@@ -5,7 +5,7 @@ const cookieParser=require("cookie-parser")
 const cors=require("cors")
 const PORT=process.env.PORT||8081
 
-
+app.enable('trust proxy');
 app.use(cors({
     origin:"https://ask-project-aman.netlify.app",
     credentials: true,
