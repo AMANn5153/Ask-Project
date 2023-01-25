@@ -7,13 +7,7 @@ const PORT=process.env.PORT||8081
 
 
 app.use(cors({
-    origin:function (origin, callback) {
-    // db.loadOrigins is an example call to load
-    // a list of origins from a backing database
-    db.loadOrigins(function (error, origins) {
-      callback(error, origins)
-    })
-  },
+    origin:"https://ask-project-aman.netlify.app",
     credentials: true,
     methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
     allowedHeaders: ['Content-Type'],
