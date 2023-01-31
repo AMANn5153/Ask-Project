@@ -9,8 +9,8 @@ app.enable('trust proxy');
 app.use(cors({
     origin:"https://ask-frontend-lzaw.onrender.com",
     credentials: true,
-    methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
-    allowedHeaders: ['Content-Type',],
+    methods: ['GET','POST','HEAD','PUT','PATCH','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type','Authorization','Accept','Origin','X-Api-Key','X-Requested-With'],
     exposedHeaders: ['Content-Type']
 }))
 app.use(express.static("/profile_pic"))
