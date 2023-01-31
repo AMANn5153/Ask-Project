@@ -7,7 +7,7 @@ const PORT=process.env.PORT||8081
 
 app.enable('trust proxy');
 app.use(cors({
-    origin:"https://ask-project-aman.netlify.app",
+    origin:"https://ask-frontend.onrender.com",
     credentials: true,
     methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
     allowedHeaders: ['Content-Type',],
