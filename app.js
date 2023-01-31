@@ -6,13 +6,13 @@ const cors=require("cors")
 const PORT=process.env.PORT||8081
 
 app.enable('trust proxy');
-// app.use(cors({
-//     origin:"https://ask-frontend-lzaw.onrender.com",
-//     credentials: true,
-//     methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
-//     allowedHeaders: ['Content-Type',],
-//     exposedHeaders: ['Content-Type']
-// }))
+app.use(cors({
+    origin:"https://ask-frontend-lzaw.onrender.com",
+    credentials: true,
+    methods: ['GET','POST','HEAD','PUT','PATCH','DELETE'],
+    allowedHeaders: ['Content-Type',],
+    exposedHeaders: ['Content-Type']
+}))
 app.use(express.static("/profile_pic"))
 
 dotenv.config({path:"./config.env"})
