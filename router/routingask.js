@@ -100,6 +100,8 @@ router.post("/Login",async (req,res)=>{       //Login  API
         res.cookie("authcookie",token,{
           expires:new Date(Date.now()+3600000),
           httpOnly:true,
+          sameSite:"none",
+          secure:true
         })
         res.status(200).json({message:"logged in"})
       }

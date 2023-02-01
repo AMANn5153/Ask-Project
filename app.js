@@ -4,10 +4,19 @@ const dotenv=require("dotenv")
 const cookieParser=require("cookie-parser")
 const cors=require("cors")
 const PORT=process.env.PORT||8081
-
+const allowedOrigins=[
+    "https://ask-frontend-lzaw.onrender.com"
+]
 app.enable('trust proxy');
 app.use(cors({
-    origin:"https://ask-frontend-lzaw.onrender.com",
+    
+    origin:(origin,callback)=>{
+        if(allowedOrigins.indexOf(origin) !== -1 || !origin){
+            callback(null,true)
+        }else{
+            callback(new Error('not allowed by cors'))
+        }
+    },
     credentials: true,
     methods: ['GET','POST','HEAD','PUT','PATCH','DELETE','OPTIONS'],
     allowedHeaders: ['Content-Type','Authorization','Accept','Origin','X-Api-Key','X-Requested-With'],
