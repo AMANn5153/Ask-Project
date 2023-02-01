@@ -4,7 +4,8 @@ const {Testbackend}=require("../models/models")
 
 const authenticate= async (req,res,next)=>{
     try{
-    const token= req.cookies.authcookie// taking token
+    const token= req.cookies.auth// taking token
+    
     const authnToken= jwt.verify(token,process.env.SECRET)//verfify token with secret key{token is made up of user unique id and secret key} return unique id
     const userInfo= await Testbackend.find({_id:authnToken._id},{"tokens.token":token})//finding document that matches the unique id and token 
 

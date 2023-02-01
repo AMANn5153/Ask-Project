@@ -97,13 +97,12 @@ router.post("/Login",async (req,res)=>{       //Login  API
       const passCheck=await bcrypt.compare(Password,exist.password)
       if(passCheck){
         const token= await exist.generateAuthToken();
-        res.cookie("authcookie",token,{
-          expires:new Date(Date.now()+3600000),
-          httpOnly:true,
-          sameSite:"none",
-          secure:true
-        })
-        res.status(200).json({message:"logged in"})
+        // res.cookie("authcookie",token,{
+        //   expires:new Date(Date.now()+3600000),
+        //   httpOnly:true,
+        // })
+        
+        res.status(200).json({token:token})
       }
       else{
         return res.status(401).json({error:"invalid credentials"})
@@ -213,6 +212,7 @@ catch(e){
 
 router.post("/UserInfo",async (req,res)=>{     //userINFO API
   const {id}=req.body
+  console.log(req);
   
     try{
       const result=await Testbackend.findOne({_id:id},"username")
@@ -474,6 +474,7 @@ router.post("/ShowReply",async(req,res)=>{
 })
 
 router.get("/Account",authenticate,async(req,res)=>{//this is used for the infomation in the account
+  console.log(req)
   try{
     const getUser=await Testbackend.findOne({_id:req.userinfo},{tokens:0})
     res.status(202).send(getUser)
