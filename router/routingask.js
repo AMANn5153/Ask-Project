@@ -99,7 +99,7 @@ router.post("/Login",async (req,res)=>{       //Login  API
         const token= await exist.generateAuthToken();
         res.cookie("authcookie",token,{
           expires:new Date(Date.now()+3600000),
-          httpOnly:true,
+          httpOnly:false,
         })                                                                                         
       }
       else{
