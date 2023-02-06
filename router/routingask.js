@@ -104,7 +104,8 @@ router.post("/Login",async (req,res)=>{       //Login  API
           httpOnly:false,
           domian:"https://ask-frontend-lzaw.onrender.com",
           path:"/",
-          secure:true
+          secure:true,
+          sameSite:"none"
         }) 
         res.status(200).json({token:token})                                                                                        
       }
