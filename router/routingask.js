@@ -87,6 +87,7 @@ router.post("/register",async (req,res)=>{      //registeration  API
 router.post("/Login",async (req,res)=>{       //Login  API
     
   const {email,Password}=req.body;
+  console.log(req.body)
   if(!email || !Password){
    return res.status(403).json({error:"empty Fields"})
   }
@@ -97,10 +98,12 @@ router.post("/Login",async (req,res)=>{       //Login  API
       const passCheck=await bcrypt.compare(Password,exist.password)
       if(passCheck){
         const token= await exist.generateAuthToken();
+        console.log(token)
         res.cookie("authcookie",token,{
-          expires:new Date(Date.now()+3600000),
-          httpOnly:false,
-        })                                                                                         
+          expires:new Date(Date.now()+36000000),
+          httpOnly:false
+        }) 
+        res.status(200).json({token:token})                                                                                        
       }
       else{
         return res.status(401).json({error:"invalid credentials"})

@@ -10,7 +10,7 @@ const PORT=process.env.PORT||8003
 app.enable('trust proxy');
 app.use(cors({
     
-    origin:"https://ask-frontend-lzaw.onrender.com",
+    origin:["https://ask-frontend-lzaw.onrender.com","http://localhost:3000"],
     credentials: true,
     methods: ['GET','POST','HEAD','PUT','PATCH','DELETE','OPTIONS'],
     allowedHeaders: ['Content-Type','Authorization','Accept','Origin','X-Api-Key','X-Requested-With'],
