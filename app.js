@@ -5,9 +5,8 @@ const cookieParser=require("cookie-parser")
 const cors=require("cors")
 const PORT=process.env.PORT||8003
 const allowedOrigins=[
-    "https://ask-frontend-lzaw.onrender.com",
-    "http://localhost:3000"
-]
+    "https://ask-frontend-lzaw.onrender.com",]
+   
 app.enable('trust proxy');
 app.use(cors({
     

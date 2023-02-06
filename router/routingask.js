@@ -97,12 +97,10 @@ router.post("/Login",async (req,res)=>{       //Login  API
       const passCheck=await bcrypt.compare(Password,exist.password)
       if(passCheck){
         const token= await exist.generateAuthToken();
-        // res.cookie("authcookie",token,{
-        //   expires:new Date(Date.now()+3600000),
-        //   httpOnly:true,
-        // })
-        
-        res.status(200).json({token:token})
+        res.cookie("authcookie",token,{
+          expires:new Date(Date.now()+3600000),
+          httpOnly:true,
+        })                                                                                         
       }
       else{
         return res.status(401).json({error:"invalid credentials"})
