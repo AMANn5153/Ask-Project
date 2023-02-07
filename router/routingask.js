@@ -102,9 +102,8 @@ router.post("/Login",async (req,res)=>{       //Login  API
         res.cookie("authcookie",token,{
           expires:new Date(Date.now()+36000000),
           httpOnly:false,
-          domian:"https://ask-frontend-lzaw.onrender.com",
           path:"/",
-          secure:true,
+          secure:false,
           sameSite:"none"
         }) 
         res.status(200).json({token:token})                                                                                        
