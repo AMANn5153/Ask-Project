@@ -99,13 +99,13 @@ router.post("/Login",async (req,res)=>{       //Login  API
       if(passCheck){
         const token= await exist.generateAuthToken();
         console.log(token)
-        res.cookie("authcookie",token,{
-          expires:new Date(Date.now()+36000000),
-          httpOnly:false,
-          path:"/",
-          secure:false,
-          sameSite:"none"
-        }) 
+        // res.cookie("authcookie",token,{
+        //   expires:new Date(Date.now()+36000000),
+        //   httpOnly:false,
+        //   path:"/",
+        //   secure:false,
+        //   sameSite:"none"
+        // }) 
         res.status(200).json({token:token})                                                                                        
       }
       else{
