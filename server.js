@@ -24,13 +24,15 @@ app.use(express.json())// it is middleware which parses income request with json
 require("./db/conn")
 app.use(cookieParser())
 
-app.use(require("./router/routingask"))// middleware where all the routes are defined or all the Api's are defined
+
 
 if (process.env.NODE_ENV === 'production') {
     //*Set static folder up in production
-    app.use(express.static('client/build'));
+    app.use(express.static(path.resolve(__dirname, 'client', 'build')));
 
-    app.get('/*', (req,res) => res.sendFile(path.resolve(__dirname, 'client', 'build','index.html')));
+    app.get('/', (req,res) => res.sendFile(path.resolve(__dirname, 'client', 'build','index.html')));
   }
+
+  app.use(require("./router/routingask"))// middleware where all the routes are defined or all the Api's are defined
 
 app.listen(PORT, () => console.log(`connected to port number ${PORT}`))//creting a port number 8081
