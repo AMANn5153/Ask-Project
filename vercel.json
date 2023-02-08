@@ -3,12 +3,16 @@
         {
             "src":"./server.js",
             "use":"@vercel/node"
+        },
+        {
+            "src": "./client/build",    
+            "use": "@vercel/static"
         }
     ],
-    "routes":[
+    "rewrites":[
         {
-            "src":"/.*",
-            "dest":"./router/routingask.js"
+            "source":"/(.*)",
+            "destination":"/router/routingask.js"
         }
     ]
 }
