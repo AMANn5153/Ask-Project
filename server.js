@@ -32,8 +32,5 @@ if (process.env.NODE_ENV === 'production') {
 
     app.get('*', (req,res) => res.sendFile(path.resolve(__dirname, 'client', 'build','index.html')));
   }
-// app.get('/', (req, res) =>{
-//     res.send("Backend")
-// }
-// )
+
 app.listen(PORT, () => console.log(`connected to port number ${PORT}`))//creting a port number 8081
