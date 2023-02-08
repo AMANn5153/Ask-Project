@@ -1,1 +1,0 @@
-export const server="https://askbackend-ek02.onrender.com"
