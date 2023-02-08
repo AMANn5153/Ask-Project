@@ -1,0 +1,81 @@
+.Login-page{
+    width: 100vw;
+    height:100vh;
+    display: grid;
+    grid-template-rows: 1fr 8fr;
+}
+.Login-page-navbar
+{
+    grid-column:1/-1 ;
+    grid-row: 1/2;
+}
+ .Login-content{
+    grid-column:1/-1 ;
+    grid-row: 2/-1; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+ }
+.Login-content-box{
+    width:40rem;
+    height: 55%;
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+    box-shadow: 1px -1px 1px  1px rgb(197, 196, 196); 
+    border-radius: 20px;  
+}
+.login-form{
+    grid-column: 1/2;
+    
+}
+.login-img{
+    grid-column: 2/3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin : 5px;
+
+}
+input{
+    margin: 15px;
+    border: none;
+    padding:5px;
+    outline: none;
+    border-bottom: 1px solid orange;
+    font-size: larger;
+    color:orange
+
+}
+.btn{
+    padding:15px;
+    border:1px solid orange;
+    color:orange;
+    width:100px;
+    margin:30px;
+    font-size: medium;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 10px;
+}
+.btn:hover{
+    color:white;
+    background-color: orange;
+    box-shadow: 4px 4px 4px rgb(197, 196, 196); 
+}
+@media screen and (max-width: 720px) {
+    .Login-page {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 9fr;
+    }
+  
+    .Login-content-box {
+      grid-template-columns: 1fr;
+      width: 90%;
+      height: 80%;
+    }
+  
+    .login-form, .login-img {
+      grid-column: 1/-1;
+    }
+  }

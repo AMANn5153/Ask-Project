@@ -1,0 +1,125 @@
+
+.nav-div-styl{
+    position: fixed;
+    top:0;
+    width:100%;
+    height:71px;
+    display: grid;
+    grid-template-columns: 1fr 4fr 1fr;
+    z-index: 1;
+    background-image: linear-gradient(to right,rgba(255,0,0,0),rgb(255, 166, 0));
+    border-bottom:1px solid whitesmoke;
+
+}
+.nav-div-head-styl a{
+    height: 100%;
+    grid-column: 1/2;
+    grid-row: 1/-1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.nav-div-list-styl{
+    grid-column:2/3;
+    grid-row:1/-1;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-around ;
+    align-items: center;
+
+}
+.hide-home{
+    display:none
+    }
+
+.ul-styl {
+    display:flex;
+    justify-content: space-around;
+    align-items: center;
+    list-style-type:none;
+}
+span{
+    color:orange
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+.nav-link:hover{
+    color:rgb(255, 255, 255);
+}
+.div-link{
+    width: 100px;
+    justify-content: space-around;
+    align-items: center;
+    padding:10px;
+    font-size: medium;
+    border-radius: 10px;
+}
+
+.div-link:hover{
+    background:rgb(201, 89, 4);
+}
+
+.nav-div-sm-styl{
+    grid-column: 3/-1;
+    padding:20px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items:center;
+}
+.active_class{
+    color: white;
+}
+
+.active_class span{
+    position: relative;
+    visibility: hidden;
+    bottom:5px;
+    color:white;
+}
+.active_class:hover span{
+    visibility:visible;
+    transform: scale(1.1);
+}
+
+@media only screen and (max-width: 768px) {
+    .nav-div-styl {
+        position: fixed;
+        bottom:0;
+        width:100vw;
+        height:71px;
+        display: grid;
+        grid-template-columns:1fr 4fr 1fr;
+        z-index: 1;
+        background-image: linear-gradient(to right,rgba(138, 135, 135, 0),rgb(139, 95, 11));
+        border-bottom:1px solid whitesmoke;
+    }
+    
+    .nav-animation{
+        grid-column: 1/2;
+        width:0;
+        display: none;
+    }
+    .hide-home{
+        display:flex;
+        font-size: small;
+        font-weight: lighter;
+        color:orange
+        }
+        
+    .nav-div-list-styl {
+      grid-column: 2/3;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  
+    .div-link {
+      width: 100%;
+      padding: 10px;
+    }
+  }
+  

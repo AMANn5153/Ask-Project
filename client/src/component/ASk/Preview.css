@@ -1,0 +1,78 @@
+.Ask-preview{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction: column;
+    overflow: scroll;
+}
+.Ask-preview-btn{
+    position: relative;
+    width:75px;
+    height:30px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    overflow: hidden;
+}
+.popup-overlay{
+    background: rgba(0, 0, 0, 0.5);
+ }
+ .popup-content {
+   margin: auto;
+   background: rgb(196,197,197);
+   width: 80%;
+   height: 75%;
+   padding: 5px;
+ }
+ .close-btn{
+    position: absolute;
+    top: -10px;
+    right:-10px;
+    cursor:pointer;
+    color:orange;
+    border-radius:100%;
+    border:1px solid black;
+    width:30px;
+    height: 30px;
+    font-size: x-large;
+    text-align: center;
+}
+.Ask-preview-title{
+    flex-grow: 2;
+    margin: 10px;
+    padding:5px;
+    width:100%;
+}
+.Ask-preview-problem{
+    flex-grow:5;
+    margin:10px;
+    padding:5px;
+    width:100%;
+}
+.Ask-preview-expec{
+    flex-grow:5;
+    margin:10px;
+    padding:5px;
+    width:100%;
+}
+.Ask-preview-post{
+    flex-grow: 1;
+    margin:10px;
+    padding:5px;
+    width:100%;
+}
+.ask-post-btn{
+    width:75px;
+    height:45px;
+    padding:5px;
+    color:orange;
+    background: white;
+    cursor: pointer;
+    border: 1px solid orange;
+    border-radius: 5px;
+}
+.ask-post-btn:hover{
+    box-shadow: 1px 1px 1px green;
+    color: green;
+    border:2px solid green;
+}

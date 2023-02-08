@@ -1,0 +1,66 @@
+.anima-div{
+    width:20px;
+    height:20px;
+    border:1px solid orange ;
+    border-radius: 20px ;
+    padding:20px;
+    margin :5px;
+    text-align: center;
+    position: relative;
+    animation: animation-anima-div ;
+    animation-duration: 5s;
+    animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+    animation-iteration-count: infinite;
+}
+
+@keyframes animation-anima-div{
+    from{
+        transform: rotate(0deg);
+        color:black;
+        background-color: orange;
+    }
+    to{
+        transform: rotate(360deg);
+        color:orange;
+        background-color:white;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .anima-div {
+      width: 15px;
+      height: 15px;
+      border-radius: 15px;
+      padding: 15px;
+      margin: 3px;
+      font-size: smaller;
+    }
+  }
+  
+  .anima-div{
+      width:20px;
+      height:20px;
+      border:1px solid orange ;
+      border-radius: 20px ;
+      padding:20px;
+      margin :5px;
+      text-align: center;
+      position: relative;
+      animation: animation-anima-div ;
+      animation-duration: 5s;
+      animation-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+      animation-iteration-count: infinite;
+  }
+  
+  @keyframes animation-anima-div{
+      from{
+          transform: rotate(0deg);
+          color:black;
+          background-color: orange;
+      }
+      to{
+          transform: rotate(360deg);
+          color:orange;
+          background-color:white;
+      }
+  }
