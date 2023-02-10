@@ -276,7 +276,7 @@ router.post("/Ask",authenticate,uploadCode.single("codeSnip"),async (req,res)=>{
 
 
 
-router.get("/Question",async (req,res)=>{
+router.get("/question",async (req,res)=>{
   try{
   const questionResult=await Testbackend.aggregate([{
     $project:{"Post":1,"username":1}},{$unwind:"$Post"},{$group:{_id:"$Post._id",title:{$first:"$Post.title"},
