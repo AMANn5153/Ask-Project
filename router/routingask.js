@@ -228,7 +228,7 @@ router.post("/UserInfo",async (req,res)=>{     //userINFO API
 
 
 router.get("/Logout",(req,res)=>{             //Logout API
-  res.clearCookie("authcookie",{domain:"localhost",path:"/"}) //clears the cookies 
+  res.clearCookie("authcookie",{domain:"askbackend-ek02.onrender.com",path:"/"}) //clears the cookies 
   return res.status(200).json({message:"logged Out"})
 
 })
@@ -276,7 +276,7 @@ router.post("/Ask",authenticate,uploadCode.single("codeSnip"),async (req,res)=>{
 
 
 
-router.get("/questionDetails",async (req,res)=>{
+router.get("/api/questionDetails",async (req,res)=>{
   try{
   const questionResult=await Testbackend.aggregate([{
     $project:{"Post":1,"username":1}},{$unwind:"$Post"},{$group:{_id:"$Post._id",title:{$first:"$Post.title"},
