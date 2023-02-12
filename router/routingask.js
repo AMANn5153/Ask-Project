@@ -227,10 +227,10 @@ router.post("/UserInfo",async (req,res)=>{     //userINFO API
 })
 
 
-router.get("/Logout",(req,res)=>{             //Logout API
+router.get("/Logout",(req,res)=>{  
+  console.log(res);          //Logout API
   res.clearCookie("authcookie") //clears the cookies 
-   res.status(200).json({message:"logged Out"})
-
+  res.status(200).json({message:"logged Out"})
 })
 
 
