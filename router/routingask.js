@@ -228,8 +228,8 @@ router.post("/UserInfo",async (req,res)=>{     //userINFO API
 
 
 router.get("/Logout",(req,res)=>{             //Logout API
-  res.clearCookie("authcookie",{domain:"askbackend-ek02.onrender.com",path:"/"}) //clears the cookies 
-  return res.status(200).json({message:"logged Out"})
+  res.clearCookie("authcookie") //clears the cookies 
+   res.status(200).json({message:"logged Out"})
 
 })
 
